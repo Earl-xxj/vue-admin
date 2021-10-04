@@ -1,7 +1,13 @@
+/**
+ * 使用 resolve
+ */
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NzCarouselComponent } from 'ng-zorro-antd';
-import { Banner, HotTags, SongList } from 'src/app/service/data-types/common.type';
-import { HomeService } from 'src/app/service/home.service';
+import { map } from 'rxjs/internal/operators';
+import { Banner, HotTags, SongList, Singer } from 'src/app/service/data-types/common.type';
+import { SheetService } from 'src/app/service/sheet.service';
+
 
 @Component({
   selector: 'app-home',
@@ -13,37 +19,32 @@ export class HomeComponent implements OnInit {
   banners: Banner[];
   tags: HotTags[];
   songList: SongList[];
+  enterSingerList: Singer[];
   carouselActiveIdx = 0;
   @ViewChild(NzCarouselComponent, { static: true }) private nzCarousel: NzCarouselComponent;
-  constructor(private serve: HomeService) { 
-    this.getBanner();
-    this.getHotTags();
-    this.getPersonalized();
+  constructor(
+    private route: ActivatedRoute,
+    private sheetServe: SheetService
+    ) { 
+      this.route.data.pipe(map(item => item.homeData)).subscribe(([banners,tags,songList,enterSingerList]) => {
+        this.banners = banners;
+        this.tags = tags;
+        this.songList = songList;
+        this.enterSingerList = enterSingerList;
+      })
   }
-  //获取轮播图
-  getBanner() {
-    this.serve.getBanner().subscribe(banners => {
-      console.log('banners', banners);
-      this.banners = banners;
-    })
-  }
-  // 获取热门标签
-  getHotTags() {
-    this.serve.getHotTags().subscribe(res => {
-      console.log('getHotTags', res);
-      this.tags = res;
-    })
-  }
-  // 获取推荐歌单
-  getPersonalized() {
-    this.serve.getPersonalized().subscribe(res => {
-      console.log('getPersonalized', res);
-      this.songList = res;
+
+  
+  onPlaySheet(id: number) {
+    console.log(id, 'oooo')
+    // getSongSheetDetail
+    this.sheetServe.playSheet(id).subscribe(res => {
+      console.log(res, 'res')
     })
   }
   ngOnInit() {
   }
-  
+  // 轮播切换
   onBeforeChange({to}) {
     this.carouselActiveIdx = to;
   }
@@ -51,4 +52,5 @@ export class HomeComponent implements OnInit {
   onChangeSlide(type: 'pre' | 'next') {
     this.nzCarousel[type]();
   }
+
 }

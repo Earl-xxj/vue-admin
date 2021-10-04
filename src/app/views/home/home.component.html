@@ -36,23 +36,24 @@
                             class="sheet-item"
                             *ngFor="let item of songList"
                             [sheet]="item"
+                            (onPlay)="onPlaySheet($event)"
                             ></app-singel-sheet>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="right">
-                <h3>登录</h3>
+                <app-member-card></app-member-card>
                 <div class="settled-singer">
                     <div class="tit"><b>入驻歌手</b></div>
                     <div class="list">
-                        <div class="card">
+                        <div class="card" *ngFor="let item of enterSingerList">
                             <div class="pic">
-                                <img src="https://p1.music.126.net/YO9db8qwxxI0Uj6rCsVGXg==/17868163463382834.jpg" alt="">
+                                <img [src]="item.picUrl" [alt]="item.name">
                             </div>
                             <div class="txt">
-                                <b class="ellipisis">名称</b>
-                                <span>专辑数量</span>
+                                <b class="ellipisis">{{item.name}}</b>
+                                <span>专辑数量{{item.albumSize}}</span>
                             </div>
                         </div>
                     </div>
